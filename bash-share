@@ -1,39 +1,58 @@
 #!/usr/bin/bash
 
-PUBURL="http://foo.bar.de/folder"
-SSHURL="user@bar.de:folder"
+PUBURL="http://files.michiwend.com/share"
+SSHURL="michael@michiwend.com:files/share"
 
 
-USAGE="\nBenutzung:\nbash-share Quelldatei [Zieldatei]\n"
+USAGE="\nBenutzung:\n\t\e[0;34mbash-share \e[00mQuelldatei [Zieldatei]\n\t\e[0;34mbash-share \e[00mQuellverzeichnis [Zielarchiv]\n"
 
-if [[ $# -gt 0 && $#  -lt 3 ]]; then
+if [[ $# -gt 0 && $# -lt 3 ]]; then # 1-2 Parameter wurden eingegeben
 
-  if [ -f $1 ]; then
+    if [[ -d $1 || -f $1 ]]; then # Parameter 1 ist Gültiger Ordner oder Datei
 
-    scp $1 $SSHURL/$2 2> /dev/null
+        if [ -d $1 ]; then # Parameter 1 ist Ordner
 
-    if [ $? == 0 ]; then
-      
-      if [ $# == 2 ]; then
-        URL="$PUBURL/$2"
-      else
-        URL="$PUBURL/$(basename $1)"
-      fi
+            CURRDIR=$(pwd)
+            SOURCE="/tmp/$(basename $1).tar.gz"
+            REMOVE=true
+            
+            cd $1
+            tar -czf $SOURCE *
+            cd $CURRDIR
 
-      # Aufruf für normale Zwischenablage (Strg + V)
-      echo $URL | xclip -selection clipboard
-      # Aufruf für mittlere Maustaste
-      #echo $URL | xclip 
-      echo "$URL wurde in dei Zwischenablage kopiert."
+        else # Parameter 1 ist Datei
+            SOURCE=$1
+            REMOVE=false
+        fi
+
+        scp $SOURCE $SSHURL/$2 2> /dev/null
+        
+        if [ $REMOVE ]; then
+            rm $SOURCE
+        fi
+
+        if [ $? == 0 ]; then
+
+            if [ $# == 2 ]; then
+                URL="$PUBURL/$2"
+            else
+                URL="$PUBURL/$(basename $SOURCE)"
+            fi
+
+            # Aufruf für normale Zwischenablage (Strg + V)
+            echo $URL | xclip -selection clipboard
+            # Aufruf für mittlere Maustaste
+            #echo $URL | xclip 
+            echo "$URL wurde in dei Zwischenablage kopiert."
+
+        else
+            echo "Übertragung fehlgeschlagen"
+        fi
 
     else
-      echo "Übertragung fehlgeschlagen"
+        echo "$1: Datei oder Verzeichnis nicht gefunden"
     fi
 
-  else
-    echo "'$1' ist keine gültige Datei"
-  fi
-
 else
-  echo -e $USAGE
+    echo -e $USAGE
 fi
