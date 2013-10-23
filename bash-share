@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
-PUBURL="http://files.michiwend.com/share"
-SSHURL="michael@michiwend.com:files/share"
+PUBURL="http://foo.bar.de/folder"
+SSHURL="user@bar.de:folder"
 
 
 USAGE="\nBenutzung:\nbash-share Quelldatei [Zieldatei]\n"
