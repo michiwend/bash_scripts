@@ -1,0 +1,23 @@
+share ()
+{
+
+  PUBURL="http://files.michiwend.com/share"
+  SSHURL="michael@michiwend.com:files/share"
+
+  if [ -f $1 ]; then
+    scp $1 $SSHURL 2> /dev/null
+    if [ $? == 0 ]; then
+      URL="$PUBURL/$(basename $1)"
+      # Aufruf für normale Zwischenablage (Strg + V)
+      echo $URL | xclip -selection clipboard
+      # Aufruf für mittlere Maustaste
+      #echo $URL | xclip 
+      echo "$URL wurde in dei Zwischenablage kopiert."
+    else
+      echo "Übertragung fehlgeschlagen"
+    fi
+  else
+    echo "'$1' ist keine gültige Datei"
+  fi
+
+}
