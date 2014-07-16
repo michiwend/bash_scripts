@@ -27,7 +27,7 @@ if [[ $# -gt 0 && $# -lt 3 ]]; then # 1-2 Parameter wurden eingegeben
 
         scp $SOURCE $SSHURL/$2 2> /dev/null
         
-        if [ $REMOVE ]; then
+        if [[ "$REMOVE" == true ]]; then
             rm $SOURCE
         fi
 
